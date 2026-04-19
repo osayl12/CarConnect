@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ${DOCKERHUB_USERNAME}/carconnect-backend:latest
+    container_name: carconnect-backend
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - JWT_SECRET=${JWT_SECRET}
+      - CLIENT_URL=${CLIENT_URL}
+    networks:
+      - carconnect-net
+
+  frontend:
+    image: ${DOCKERHUB_USERNAME}/carconnect-frontend:latest
+    container_name: carconnect-frontend
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - carconnect-net
+
+networks:
+  carconnect-net:
+    driver: bridge
