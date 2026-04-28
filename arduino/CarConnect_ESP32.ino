@@ -1,8 +1,17 @@
 /*
- * CarConnect - ESP32 OBD2 Module
+ * CarConnect - ESP32 Main File
  *
- * חיבורים:
- *   ELM327 (OBD2 Bluetooth) → ESP32 Serial2
+ * קבצים:
+ *   config.h            - הגדרות WiFi, שרת, פינים
+ *   wifi_manager.h/cpp  - ניהול חיבור WiFi
+ *   obd2_reader.h/cpp   - קריאת נתונים מהרכב דרך ELM327
+ *   server_sender.h/cpp - שליחת נתונים לשרת
+ *
+ * חיבורים פיזיים:
+ *   ELM327 TX  →  ESP32 GPIO16 (RX2)
+ *   ELM327 RX  →  ESP32 GPIO17 (TX2)
+ *   ELM327 GND →  ESP32 GND
+ *   ELM327 VCC →  ESP32 VIN (5V)
  *   RX2 (GPIO16) ← TX של ELM327
  *   TX2 (GPIO17) → RX של ELM327
  *
