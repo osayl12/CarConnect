@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listAllFaultReports } from '../services/faults';
+import { FAULT_STATUSES, FAULT_STATUS_META } from '../constants/faultStatus';
 import StatusBadge from '../components/StatusBadge';
 import UrgencyTag from '../components/UrgencyTag';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All statuses' },
-  { value: 'waiting_for_mechanic', label: 'Waiting for mechanic' },
-  { value: 'under_review', label: 'Under review' },
-  { value: 'appointment_scheduled', label: 'Appointment scheduled' },
-  { value: 'repaired', label: 'Repaired' },
-  { value: 'completed', label: 'Completed' },
+  ...FAULT_STATUSES.map((value) => ({ value, label: FAULT_STATUS_META[value].label })),
 ];
 
 const URGENCY_OPTIONS = [

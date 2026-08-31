@@ -5,6 +5,7 @@ const {
   getAllFaultReports,
   getFaultReport,
   respondWithQuote,
+  updateStatus,
 } = require('../controllers/fault.controller');
 const { protect, requireRole } = require('../middleware/auth');
 const upload = require('../middleware/upload');
@@ -19,5 +20,6 @@ router.get('/', requireRole('mechanic'), getAllFaultReports);
 // Ownership/role check (owner or any mechanic) happens inside the controller.
 router.get('/:id', getFaultReport);
 router.put('/:id/quote', requireRole('mechanic'), respondWithQuote);
+router.patch('/:id/status', requireRole('mechanic'), updateStatus);
 
 module.exports = router;

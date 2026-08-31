@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getFaultReport, respondWithQuote } from '../services/faults';
+import { getFaultReport, respondWithQuote, updateFaultStatus } from '../services/faults';
 import { useAuth } from '../hooks/useAuth';
+import { FAULT_STATUSES, FAULT_STATUS_META } from '../constants/faultStatus';
 import StatusBadge from '../components/StatusBadge';
 import UrgencyTag from '../components/UrgencyTag';
 import QuoteForm from '../components/QuoteForm';
@@ -14,6 +15,8 @@ export default function ReportDetail() {
   const [loading, setLoading] = useState(true);
   const [quoteSubmitting, setQuoteSubmitting] = useState(false);
   const [quoteError, setQuoteError] = useState('');
+  const [statusSaving, setStatusSaving] = useState(false);
+  const [statusError, setStatusError] = useState('');
 
   useEffect(() => {
     getFaultReport(id)
@@ -31,6 +34,18 @@ export default function ReportDetail() {
       setQuoteError(err.response?.data?.message || 'Could not send response');
     } finally {
       setQuoteSubmitting(false);
+    }
+  };
+
+  const handleStatusChange = async (status) => {
+    setStatusSaving(true);
+    setStatusError('');
+    try {
+      setReport(await updateFaultStatus(id, status));
+    } catch (err) {
+      setStatusError(err.response?.data?.message || 'Could not update status');
+    } finally {
+      setStatusSaving(false);
     }
   };
 
@@ -57,8 +72,29 @@ export default function ReportDetail() {
             Reported {new Date(report.createdAt).toLocaleString()}
           </p>
         </div>
-        <StatusBadge status={report.status} />
+        {/* Section 2.7: mechanic can update the status directly; the
+            customer just sees the current one. */}
+        {user?.role === 'mechanic' ? (
+          <label className="text-sm">
+            <span className="sr-only">Status</span>
+            <select
+              value={report.status}
+              disabled={statusSaving}
+              onChange={(e) => handleStatusChange(e.target.value)}
+              className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 focus:border-slate-500 focus:outline-none disabled:opacity-50"
+            >
+              {FAULT_STATUSES.map((s) => (
+                <option key={s} value={s}>
+                  {FAULT_STATUS_META[s].label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <StatusBadge status={report.status} />
+        )}
       </div>
+      {statusError && <p className="mt-2 text-sm text-red-600">{statusError}</p>}
 
       <div className="mt-6 space-y-4 rounded-lg border border-slate-200 bg-white p-5">
         {/* Section 2.4: mechanic can see customer info. Not shown to the

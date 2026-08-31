@@ -12,3 +12,6 @@ export const getFaultReport = (id) => api.get(`/faults/${id}`).then((r) => r.dat
 
 export const respondWithQuote = (id, payload) =>
   api.put(`/faults/${id}/quote`, payload).then((r) => r.data.report);
+
+export const updateFaultStatus = (id, status) =>
+  api.patch(`/faults/${id}/status`, { status }).then((r) => r.data.report);

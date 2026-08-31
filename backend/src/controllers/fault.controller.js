@@ -159,10 +159,41 @@ async function respondWithQuote(req, res, next) {
   }
 }
 
+// Section 2.7: "Mechanic can update the status." A manual override for cases
+// the automatic transitions (quote -> under_review, appointment confirm/cancel)
+// don't cover — e.g. marking a job repaired or completed.
+async function updateStatus(req, res, next) {
+  try {
+    const { status } = req.body;
+    if (!status || !FaultReport.STATUSES.includes(status)) {
+      res.status(400);
+      throw new Error(`Status must be one of: ${FaultReport.STATUSES.join(', ')}`);
+    }
+
+    const report = await FaultReport.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true, runValidators: true }
+    )
+      .populate('vehicle', 'make model year vin licensePlate color')
+      .populate('customer', 'name email phone');
+
+    if (!report) {
+      res.status(404);
+      throw new Error('Fault report not found');
+    }
+
+    res.json({ report: presentReport(report) });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   createFaultReport,
   getMyFaultReports,
   getAllFaultReports,
   getFaultReport,
   respondWithQuote,
+  updateStatus,
 };
