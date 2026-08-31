@@ -1,18 +1,8 @@
 import { useState } from 'react';
+import { Field, Input } from './ui/Field';
+import Button from './ui/Button';
 
 const emptyForm = { make: '', model: '', year: '', vin: '', licensePlate: '', color: '' };
-
-function Field({ label, ...props }) {
-  return (
-    <label className="block text-sm">
-      <span className="font-medium text-slate-700">{label}</span>
-      <input
-        {...props}
-        className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-      />
-    </label>
-  );
-}
 
 // Note: when editing, the parent renders this with key={vehicle._id}, so a
 // different vehicle mounts a fresh instance instead of needing an effect to
@@ -31,36 +21,35 @@ export default function VehicleForm({ initialValues, onSubmit, onCancel, submitt
   return (
     <form
       onSubmit={handleSubmit}
-      className="grid grid-cols-1 gap-3 rounded-lg border border-slate-200 bg-white p-4 sm:grid-cols-2"
+      className="grid grid-cols-1 gap-3 rounded-sm border border-ink/10 bg-white p-4 shadow-sm sm:grid-cols-2"
     >
-      <Field label="Make" name="make" value={form.make} onChange={handleChange} required />
-      <Field label="Model" name="model" value={form.model} onChange={handleChange} required />
-      <Field label="Year" name="year" type="number" value={form.year} onChange={handleChange} />
-      <Field label="Color" name="color" value={form.color} onChange={handleChange} />
-      <Field label="VIN (optional)" name="vin" value={form.vin} onChange={handleChange} />
-      <Field
-        label="License plate (optional)"
-        name="licensePlate"
-        value={form.licensePlate}
-        onChange={handleChange}
-      />
+      <Field label="Make">
+        <Input name="make" value={form.make} onChange={handleChange} required />
+      </Field>
+      <Field label="Model">
+        <Input name="model" value={form.model} onChange={handleChange} required />
+      </Field>
+      <Field label="Year">
+        <Input name="year" type="number" value={form.year} onChange={handleChange} />
+      </Field>
+      <Field label="Color">
+        <Input name="color" value={form.color} onChange={handleChange} />
+      </Field>
+      <Field label="VIN (optional)">
+        <Input name="vin" value={form.vin} onChange={handleChange} />
+      </Field>
+      <Field label="License plate (optional)">
+        <Input name="licensePlate" value={form.licensePlate} onChange={handleChange} />
+      </Field>
 
       <div className="col-span-full flex gap-2">
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
-        >
-          {submitting ? 'Saving...' : 'Save vehicle'}
-        </button>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? 'Saving…' : 'Save vehicle'}
+        </Button>
         {onCancel && (
-          <button
-            type="button"
-            onClick={onCancel}
-            className="rounded-md border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-          >
+          <Button type="button" variant="secondary" onClick={onCancel}>
             Cancel
-          </button>
+          </Button>
         )}
       </div>
     </form>

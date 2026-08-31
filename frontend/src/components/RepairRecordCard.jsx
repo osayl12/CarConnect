@@ -24,39 +24,39 @@ export default function RepairRecordCard({ vehicleId }) {
   };
 
   return (
-    <div className="mt-2">
-      <button onClick={handleToggle} className="text-xs font-medium text-slate-500 hover:text-slate-700">
+    <div className="mt-3 border-t border-ink/10 pt-3">
+      <button onClick={handleToggle} className="text-xs font-semibold text-steel hover:text-ink">
         {open ? 'Hide repair record' : 'View repair record'}
       </button>
 
       {open && (
-        <div className="mt-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm">
-          {loading && <p className="text-slate-500">Loading...</p>}
-          {error && <p className="text-red-600">{error}</p>}
-          {!loading && record === null && (
-            <p className="text-slate-500">No reports yet for this vehicle.</p>
-          )}
+        <div className="mt-2 rounded-sm bg-paper p-3 text-sm">
+          {loading && <p className="text-steel">Loading…</p>}
+          {error && <p className="text-alert">{error}</p>}
+          {!loading && record === null && <p className="text-steel">No reports yet for this vehicle.</p>}
           {record && (
             <div className="space-y-2">
               <div className="flex items-start justify-between gap-2">
-                <span className="font-medium text-slate-700">Problem</span>
+                <span className="font-semibold text-ink">Problem</span>
                 <StatusBadge status={record.status} />
               </div>
-              <p className="text-slate-900">{record.problem}</p>
+              <p className="text-ink">{record.problem}</p>
               {record.latestNote && (
                 <p>
-                  <span className="font-medium text-slate-700">Latest repair note: </span>
-                  {record.latestNote}
+                  <span className="font-semibold text-ink">Latest repair note: </span>
+                  <span className="text-steel">{record.latestNote}</span>
                 </p>
               )}
               {record.lastAppointment && (
                 <p>
-                  <span className="font-medium text-slate-700">Last appointment: </span>
-                  {new Date(record.lastAppointment.startTime).toLocaleString()} (
-                  {record.lastAppointment.status})
+                  <span className="font-semibold text-ink">Last appointment: </span>
+                  <span className="font-mono text-steel">
+                    {new Date(record.lastAppointment.startTime).toLocaleString()} (
+                    {record.lastAppointment.status})
+                  </span>
                 </p>
               )}
-              <Link to={`/reports/${record.faultReportId}`} className="inline-block text-slate-900 underline">
+              <Link to={`/reports/${record.faultReportId}`} className="inline-block font-semibold text-signal underline">
                 View full report
               </Link>
             </div>
