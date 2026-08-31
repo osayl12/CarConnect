@@ -1,5 +1,12 @@
 # Car Connect
 
+[![CI](https://github.com/osayl12/CarConnect/actions/workflows/ci.yml/badge.svg)](https://github.com/osayl12/CarConnect/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+
 Car Connect is a web app connecting customers with mechanics for vehicle fault
 reporting, repair coordination, and appointment management.
 
@@ -15,7 +22,7 @@ Full scope, feature decisions, and milestone plan: [CarConnect_Project_Scope.md]
 ## Project structure
 
 ```
-CarConnect2/
+CarConnect/
 ├── frontend/        React app (Vite)
 ├── backend/         Express API
 │   └── src/
