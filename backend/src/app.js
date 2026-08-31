@@ -15,8 +15,8 @@ app.use('/uploads', express.static('uploads'));
 
 app.use('/api/health', healthRoutes);
 app.use('/api/auth', require('./routes/auth.routes'));
-// Future routes mount here, e.g.:
-// app.use('/api/vehicles', require('./routes/vehicle.routes'));
+app.use('/api/vehicles', require('./routes/vehicle.routes'));
+app.use('/api/faults', require('./routes/fault.routes'));
 
 app.use(notFound);
 app.use(errorHandler);

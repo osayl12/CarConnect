@@ -20,6 +20,22 @@ export default function Navbar() {
         <div className="flex items-center gap-4 text-sm">
           {user ? (
             <>
+              {user.role === 'customer' && (
+                <>
+                  <Link to="/vehicles" className="font-medium text-slate-700 hover:text-slate-900">
+                    My Vehicles
+                  </Link>
+                  <Link to="/my-reports" className="font-medium text-slate-700 hover:text-slate-900">
+                    My Reports
+                  </Link>
+                  <Link
+                    to="/report-fault"
+                    className="rounded-md bg-slate-100 px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-200"
+                  >
+                    Report a Problem
+                  </Link>
+                </>
+              )}
               <span className="text-slate-600">
                 {user.name} <span className="text-slate-400">({user.role})</span>
               </span>
