@@ -10,7 +10,6 @@
 Car Connect is a web app connecting customers with mechanics for vehicle fault
 reporting, repair coordination, and appointment management.
 
-Full scope, feature decisions, and milestone plan: [CarConnect_Project_Scope.md](./CarConnect_Project_Scope.md).
 
 ## Stack
 
