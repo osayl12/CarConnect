@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { listVehicles, createVehicle, updateVehicle, deleteVehicle } from '../services/vehicles';
 import VehicleForm from '../components/VehicleForm';
+import RepairRecordCard from '../components/RepairRecordCard';
 
 export default function Vehicles() {
   const [vehicles, setVehicles] = useState([]);
@@ -95,34 +96,34 @@ export default function Vehicles() {
               submitting={submitting}
             />
           ) : (
-            <div
-              key={vehicle._id}
-              className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-4"
-            >
-              <div>
-                <p className="font-medium text-slate-900">
-                  {vehicle.year ? `${vehicle.year} ` : ''}
-                  {vehicle.make} {vehicle.model}
-                </p>
-                <p className="text-sm text-slate-500">
-                  {[vehicle.color, vehicle.licensePlate, vehicle.vin].filter(Boolean).join(' · ') ||
-                    'No further details'}
-                </p>
+            <div key={vehicle._id} className="rounded-lg border border-slate-200 bg-white p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-slate-900">
+                    {vehicle.year ? `${vehicle.year} ` : ''}
+                    {vehicle.make} {vehicle.model}
+                  </p>
+                  <p className="text-sm text-slate-500">
+                    {[vehicle.color, vehicle.licensePlate, vehicle.vin].filter(Boolean).join(' · ') ||
+                      'No further details'}
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setEditingId(vehicle._id)}
+                    className="text-sm font-medium text-slate-700 hover:text-slate-900"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(vehicle._id)}
+                    className="text-sm font-medium text-red-600 hover:text-red-800"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setEditingId(vehicle._id)}
-                  className="text-sm font-medium text-slate-700 hover:text-slate-900"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(vehicle._id)}
-                  className="text-sm font-medium text-red-600 hover:text-red-800"
-                >
-                  Delete
-                </button>
-              </div>
+              <RepairRecordCard vehicleId={vehicle._id} />
             </div>
           )
         )}
