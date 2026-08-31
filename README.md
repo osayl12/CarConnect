@@ -10,7 +10,6 @@
 Car Connect is a web app connecting customers with mechanics for vehicle fault
 reporting, repair coordination, and appointment management.
 
-
 ## Stack
 
 - **Frontend:** React (Vite) + Tailwind CSS + React Router + Axios
@@ -22,16 +21,22 @@ reporting, repair coordination, and appointment management.
 
 ```
 CarConnect/
-├── frontend/        React app (Vite)
-├── backend/         Express API
-│   └── src/
-│       ├── config/      DB connection
-│       ├── controllers/
-│       ├── models/
-│       ├── routes/
-│       └── middleware/
+├── frontend/ React app (Vite)
+├── backend/ Express API
+│ └── src/
+│ ├── config/ DB connection
+│ ├── controllers/
+│ ├── models/
+│ ├── routes/
+│ └── middleware/
 └── docs/
 ```
+
+## Architecture
+
+![CarConnect architecture diagram](./docs/architecture.svg)
+
+See [docs/API.md](./docs/API.md) for the full REST API reference.
 
 ## Getting started (local development)
 
@@ -40,7 +45,7 @@ CarConnect/
 ```
 cd backend
 npm install
-cp .env.example .env   # then fill in MONGO_URI and JWT_SECRET
+cp .env.example .env # then fill in MONGO_URI and JWT_SECRET
 npm run dev
 ```
 
@@ -60,7 +65,7 @@ backend in development (see `frontend/vite.config.js`).
 ## Running with Docker
 
 ```
-cp backend/.env.example backend/.env   # fill in MONGO_URI and JWT_SECRET
+cp backend/.env.example backend/.env # fill in MONGO_URI and JWT_SECRET
 docker compose up --build
 ```
 
@@ -93,9 +98,9 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every push/PR to `main`:
 
 1. **backend** / **frontend** jobs — install deps, lint, build. No secrets needed.
 2. **deploy** job — only on an actual push to `main` (never on a PR), and only
-   if both jobs above pass: builds the production images, pushes them to
-   Docker Hub, then SSHes into the Oracle Cloud VM to pull and restart them
-   (`docker-compose.prod.yml`).
+if both jobs above pass: builds the production images, pushes them to
+Docker Hub, then SSHes into the Oracle Cloud VM to pull and restart them
+(`docker-compose.prod.yml`).
 
 This deploys automatically on every push to `main` — a deliberate choice made
 when setting this up, which is more automated than the project scope doc's
