@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -37,6 +38,7 @@ export default function Navbar() {
                   >
                     Report a Problem
                   </Link>
+                  <NotificationBell />
                 </>
               )}
               {user.role === 'mechanic' && (

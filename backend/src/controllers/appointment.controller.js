@@ -1,5 +1,6 @@
 const Appointment = require('../models/Appointment');
 const FaultReport = require('../models/FaultReport');
+const notify = require('../utils/notify');
 
 // Section 2.6: mechanic defines available appointment slots.
 async function createSlot(req, res, next) {
@@ -136,6 +137,8 @@ async function confirmSlot(req, res, next) {
         status: 'appointment_scheduled',
       });
     }
+
+    await notify(appointment.customer._id, 'appointment_approved', appointment.faultReport?._id);
 
     res.json({ appointment });
   } catch (err) {

@@ -18,6 +18,7 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/vehicles', require('./routes/vehicle.routes'));
 app.use('/api/faults', require('./routes/fault.routes'));
 app.use('/api/appointments', require('./routes/appointment.routes'));
+app.use('/api/notifications', require('./routes/notification.routes'));
 
 app.use(notFound);
 app.use(errorHandler);

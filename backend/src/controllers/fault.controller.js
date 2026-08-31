@@ -1,5 +1,6 @@
 const FaultReport = require('../models/FaultReport');
 const Vehicle = require('../models/Vehicle');
+const notify = require('../utils/notify');
 
 // Adds the publicly servable image URL and strips the on-disk filename.
 function presentReport(report) {
@@ -150,6 +151,9 @@ async function respondWithQuote(req, res, next) {
     }
 
     await report.save();
+    // report.customer is still the raw ObjectId here (populate happens next).
+    await notify(report.customer, 'mechanic_replied', report._id);
+
     await report.populate('vehicle', 'make model year vin licensePlate color');
     await report.populate('customer', 'name email phone');
 
@@ -182,6 +186,8 @@ async function updateStatus(req, res, next) {
       res.status(404);
       throw new Error('Fault report not found');
     }
+
+    await notify(report.customer._id, 'status_changed', report._id);
 
     res.json({ report: presentReport(report) });
   } catch (err) {
