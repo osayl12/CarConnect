@@ -61,25 +61,27 @@ export default function NotificationBell() {
     <div className="relative" ref={containerRef}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="relative rounded-md p-2 text-slate-600 hover:bg-slate-100"
+        className="relative rounded-sm p-2 text-white/70 transition-colors hover:text-white"
         aria-label="Notifications"
       >
         🔔
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
+          <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-signal font-mono text-[10px] font-bold text-white">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 z-10 mt-2 w-80 rounded-lg border border-slate-200 bg-white shadow-lg">
-          <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2">
-            <span className="text-sm font-semibold text-slate-700">Notifications</span>
+        <div className="absolute right-0 z-10 mt-2 w-80 rounded-sm border border-ink/10 bg-white shadow-lg">
+          <div className="flex items-center justify-between border-b border-ink/10 px-3 py-2">
+            <span className="font-mono text-xs font-semibold uppercase tracking-widest text-steel">
+              Notifications
+            </span>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                className="text-xs font-medium text-slate-500 hover:text-slate-700"
+                className="text-xs font-medium text-steel hover:text-ink"
               >
                 Mark all read
               </button>
@@ -87,21 +89,23 @@ export default function NotificationBell() {
           </div>
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 && (
-              <p className="px-3 py-6 text-center text-sm text-slate-400">No notifications yet</p>
+              <p className="px-3 py-6 text-center text-sm text-steel">No notifications yet</p>
             )}
             {notifications.map((n) => (
               <button
                 key={n._id}
                 onClick={() => handleSelect(n)}
-                className={`block w-full border-b border-slate-50 px-3 py-2 text-left text-sm last:border-0 hover:bg-slate-50 ${
-                  n.read ? 'text-slate-500' : 'text-slate-900'
+                className={`block w-full border-b border-ink/5 px-3 py-2 text-left text-sm last:border-0 hover:bg-paper ${
+                  n.read ? 'text-steel' : 'text-ink'
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  {!n.read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-blue-600" />}
+                  {!n.read && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-signal" />}
                   <span className={n.read ? '' : 'font-medium'}>{n.message}</span>
                 </div>
-                <span className="text-xs text-slate-400">{new Date(n.createdAt).toLocaleString()}</span>
+                <span className="font-mono text-xs text-steel/70">
+                  {new Date(n.createdAt).toLocaleString()}
+                </span>
               </button>
             ))}
           </div>
