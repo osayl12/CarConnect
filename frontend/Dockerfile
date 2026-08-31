@@ -16,9 +16,11 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# ---- production: static files served by nginx, proxying /api and /uploads to the backend ----
-FROM nginx:alpine AS production
-COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# ---- production: static files served by Caddy, which also reverse-proxies
+# /api and /uploads to the backend AND automatically obtains/renews a
+# Let's Encrypt HTTPS certificate for the domain in the Caddyfile — no
+# certbot, no cron job, no manual cert wiring.
+FROM caddy:2-alpine AS production
+COPY --from=build /app/dist /srv
+COPY Caddyfile /etc/caddy/Caddyfile
+EXPOSE 80 443

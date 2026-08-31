@@ -62,8 +62,24 @@ Frontend: http://localhost:5173 (hot-reload) · Backend: http://localhost:5000/a
 
 This talks to MongoDB Atlas (via `backend/.env`), same as running outside Docker —
 there is no local Mongo container. `docker-compose.prod.yml` builds the
-optimized production images (nginx serving the frontend, backend not exposed
-directly) for later deployment to Oracle Cloud.
+optimized production images (Caddy serving the frontend and automatically
+provisioning HTTPS, backend not exposed directly) for deployment to Oracle
+Cloud — see the "Production deployment" section below.
+
+## Production deployment
+
+Live at `https://carconnect.duckdns.org`. The frontend's production image
+runs [Caddy](https://caddyserver.com/) instead of nginx specifically because
+it obtains and renews its Let's Encrypt certificate automatically from just
+the domain name in `frontend/Caddyfile` — no certbot, no renewal cron job.
+
+Deploys happen automatically via `.github/workflows/ci.yml`'s `deploy` job on
+every push to `main`: it builds both images, pushes them to Docker Hub, then
+SSHes into the Oracle Cloud VM to pull and restart
+`docker-compose.prod.yml`. One-time server setup (Docker install, repo
+clone, `backend/.env` with production secrets, `CORS_ORIGIN` matching the
+`https://` domain, opening ports 80+443 in both `ufw` and the OCI Security
+List) is manual and done once outside this pipeline.
 
 ## CI/CD
 

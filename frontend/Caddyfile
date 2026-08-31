@@ -1,0 +1,18 @@
+carconnect.duckdns.org {
+	# Backend API and uploaded images — proxied to the backend container.
+	handle /api/* {
+		reverse_proxy backend:5000
+	}
+
+	handle /uploads/* {
+		reverse_proxy backend:5000
+	}
+
+	# Everything else: serve the built React app, falling back to
+	# index.html for client-side (React Router) routes.
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

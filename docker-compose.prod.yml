@@ -1,8 +1,10 @@
 # Production topology, deployed to Oracle Cloud behind DuckDNS. Pulls
 # pre-built images from Docker Hub (built and pushed by .github/workflows/ci.yml
-# on every push to main) rather than building on the server. nginx serves the
-# frontend build and reverse-proxies /api and /uploads to the backend over the
-# internal compose network — the backend is not exposed to the host directly.
+# on every push to main) rather than building on the server. Caddy (the
+# frontend image) serves the built React app, reverse-proxies /api and
+# /uploads to the backend, and automatically obtains/renews a Let's Encrypt
+# HTTPS certificate for the domain configured in frontend/Caddyfile — the
+# backend is not exposed to the host directly.
 #
 # Requires a .env file next to this one on the server with:
 #   DOCKERHUB_USERNAME=<your docker hub username>
@@ -26,9 +28,18 @@ services:
     image: ${DOCKERHUB_USERNAME}/carconnect-frontend:latest
     ports:
       - "80:80"
+      - "443:443"
+    volumes:
+      # Caddy's certificate + ACME account state — must persist across
+      # restarts/redeploys, otherwise every deploy re-requests a cert from
+      # Let's Encrypt and risks hitting their rate limit.
+      - caddy_data:/data
+      - caddy_config:/config
     depends_on:
       - backend
     restart: unless-stopped
 
 volumes:
   uploads:
+  caddy_data:
+  caddy_config:
