@@ -10,6 +10,8 @@ import ReportFault from './pages/ReportFault';
 import MyReports from './pages/MyReports';
 import ReportDetail from './pages/ReportDetail';
 import MechanicDashboard from './pages/MechanicDashboard';
+import Appointments from './pages/Appointments';
+import MechanicAvailability from './pages/MechanicAvailability';
 
 function App() {
   return (
@@ -57,6 +59,22 @@ function App() {
             element={
               <ProtectedRoute role="mechanic">
                 <MechanicDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/appointments"
+            element={
+              <ProtectedRoute role="customer">
+                <Appointments />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/availability"
+            element={
+              <ProtectedRoute role="mechanic">
+                <MechanicAvailability />
               </ProtectedRoute>
             }
           />

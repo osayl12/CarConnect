@@ -28,6 +28,9 @@ export default function Navbar() {
                   <Link to="/my-reports" className="font-medium text-slate-700 hover:text-slate-900">
                     My Reports
                   </Link>
+                  <Link to="/appointments" className="font-medium text-slate-700 hover:text-slate-900">
+                    Appointments
+                  </Link>
                   <Link
                     to="/report-fault"
                     className="rounded-md bg-slate-100 px-3 py-1.5 font-medium text-slate-700 hover:bg-slate-200"
@@ -37,9 +40,14 @@ export default function Navbar() {
                 </>
               )}
               {user.role === 'mechanic' && (
-                <Link to="/mechanic" className="font-medium text-slate-700 hover:text-slate-900">
-                  Dashboard
-                </Link>
+                <>
+                  <Link to="/mechanic" className="font-medium text-slate-700 hover:text-slate-900">
+                    Dashboard
+                  </Link>
+                  <Link to="/availability" className="font-medium text-slate-700 hover:text-slate-900">
+                    Availability
+                  </Link>
+                </>
               )}
               <span className="text-slate-600">
                 {user.name} <span className="text-slate-400">({user.role})</span>
