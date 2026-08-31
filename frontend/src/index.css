@@ -1,1 +1,106 @@
 @import "tailwindcss";
+
+@import "@fontsource/bebas-neue/400.css";
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-sans/700.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+/* ---- Design tokens ----
+ * Workshop / work-order identity: every fault report is a repair ticket
+ * moving through a shop floor. Charcoal ink, cool concrete paper, burnt-orange
+ * signal for action, safety yellow used sparingly as caution accent.
+ */
+@theme {
+  --color-ink: #1c1d1b;
+  --color-paper: #eef0ee;
+  --color-signal: #e8531d;
+  --color-signal-dark: #c4441a;
+  --color-caution: #f4b400;
+  --color-caution-ink: #8a6600; /* same hue as --color-caution, darkened for readable text/stamps */
+  --color-steel: #4a5566;
+  --color-shop-green: #3d7a47;
+  --color-alert: #c23b22;
+
+  --font-display: "Bebas Neue", sans-serif;
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-signal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- Signature: work-order ticket ----
+ * The recurring motif for report/vehicle/appointment cards — a dashed
+ * perforated edge with a punch-hole, like a carbon-copy shop ticket.
+ */
+.ticket {
+  position: relative;
+  border-left: 3px dashed var(--color-steel);
+}
+
+.ticket::before {
+  content: "";
+  position: absolute;
+  left: -7.5px;
+  top: 1.25rem;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-paper);
+  border: 1.5px solid var(--color-steel);
+}
+
+/* ---- Stamp badge ----
+ * Status shown as a rotated rubber-stamp mark instead of a generic pill.
+ * Pair with a text-<color> utility to set the ink color.
+ */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.25rem 0.6rem;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  transform: rotate(-2deg);
+  white-space: nowrap;
+}
+
+/* ---- Hazard stripe ----
+ * The one recurring accent motif — used sparingly as a thin structural line,
+ * never as background texture.
+ */
+.hazard-stripe {
+  height: 4px;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-caution),
+    var(--color-caution) 10px,
+    var(--color-ink) 10px,
+    var(--color-ink) 20px
+  );
+}

@@ -1,17 +1,10 @@
-const URGENCY_STYLES = {
-  high: 'bg-red-100 text-red-700',
-  medium: 'bg-amber-100 text-amber-700',
-  low: 'bg-slate-100 text-slate-600',
+const URGENCY_META = {
+  high: { label: 'High urgency', className: 'text-alert' },
+  medium: { label: 'Medium urgency', className: 'text-caution-ink' },
+  low: { label: 'Low urgency', className: 'text-steel' },
 };
 
 export default function UrgencyTag({ urgency }) {
-  return (
-    <span
-      className={`inline-block rounded px-2 py-0.5 text-xs font-medium capitalize ${
-        URGENCY_STYLES[urgency] || 'bg-slate-100 text-slate-600'
-      }`}
-    >
-      {urgency} urgency
-    </span>
-  );
+  const meta = URGENCY_META[urgency] || { label: urgency, className: 'text-steel' };
+  return <span className={`stamp ${meta.className}`}>{meta.label}</span>;
 }
