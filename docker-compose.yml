@@ -1,0 +1,39 @@
+# Local development. Hot-reloads both apps; connects to MongoDB Atlas
+# (not a local Mongo container) via backend/.env, same as running outside Docker.
+#
+# Usage:
+#   cp backend/.env.example backend/.env   # then fill in MONGO_URI / JWT_SECRET
+#   docker compose up --build
+#
+# Frontend: http://localhost:5173  Backend: http://localhost:5000/api/health
+
+services:
+  backend:
+    build:
+      context: ./backend
+      target: development
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      target: development
+    environment:
+      # Server-side Vite proxy target — containers reach each other by
+      # service name, not localhost. See frontend/vite.config.js.
+      - PROXY_TARGET=http://backend:5000
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped

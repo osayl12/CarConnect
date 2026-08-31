@@ -1,0 +1,33 @@
+# Production-shaped topology, for deploying to Oracle Cloud behind DuckDNS.
+# Builds optimized images (no hot-reload); nginx serves the frontend build
+# and reverse-proxies /api and /uploads to the backend over the internal
+# compose network — the backend is not exposed to the host directly.
+#
+# Usage on the server:
+#   docker compose -f docker-compose.prod.yml up -d --build
+
+services:
+  backend:
+    build:
+      context: ./backend
+      target: production
+    env_file:
+      - ./backend/.env
+    volumes:
+      - uploads:/app/uploads
+    expose:
+      - "5000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  uploads:
