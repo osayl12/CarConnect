@@ -12,6 +12,7 @@ import ReportDetail from './pages/ReportDetail';
 import MechanicDashboard from './pages/MechanicDashboard';
 import Appointments from './pages/Appointments';
 import MechanicAvailability from './pages/MechanicAvailability';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -78,6 +79,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
