@@ -14,8 +14,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static('uploads'));
 
 app.use('/api/health', healthRoutes);
+app.use('/api/auth', require('./routes/auth.routes'));
 // Future routes mount here, e.g.:
-// app.use('/api/auth', require('./routes/auth.routes'));
 // app.use('/api/vehicles', require('./routes/vehicle.routes'));
 
 app.use(notFound);
