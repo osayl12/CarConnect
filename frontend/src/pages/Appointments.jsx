@@ -3,6 +3,10 @@ import { Link } from 'react-router-dom';
 import { listMyFaultReports } from '../services/faults';
 import { listAvailableSlots, listMyBookings, requestSlot, cancelSlot } from '../services/appointments';
 import AppointmentStatusTag from '../components/AppointmentStatusTag';
+import PageHeader from '../components/ui/PageHeader';
+import { Field, Select } from '../components/ui/Field';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
 
 export default function Appointments() {
   const [reports, setReports] = useState([]);
@@ -58,8 +62,8 @@ export default function Appointments() {
   if (!loading && reports.length === 0) {
     return (
       <div className="mx-auto mt-16 max-w-md px-4 text-center">
-        <p className="text-slate-600">Report a problem first, then you can book an appointment for it.</p>
-        <Link to="/report-fault" className="mt-2 inline-block font-medium text-slate-900 underline">
+        <p className="text-steel">Report a problem first, then you can book an appointment for it.</p>
+        <Link to="/report-fault" className="mt-2 inline-block font-semibold text-signal underline">
           Report a Problem
         </Link>
       </div>
@@ -68,72 +72,57 @@ export default function Appointments() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-slate-900">Appointments</h1>
+      <PageHeader eyebrow="Bookings" title="Appointments" />
 
-      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-      {loading && <p className="mt-6 text-sm text-slate-500">Loading...</p>}
+      {error && <p className="mt-4 text-sm text-alert">{error}</p>}
+      {loading && <p className="mt-6 text-sm text-steel">Loading…</p>}
 
       {!loading && (
         <>
           <section className="mt-6">
-            <h2 className="text-lg font-semibold text-slate-900">Book a slot</h2>
+            <h2 className="font-display text-xl tracking-wide text-ink">Book a slot</h2>
 
-            <label className="mt-2 block text-sm">
-              <span className="font-medium text-slate-700">For which report?</span>
-              <select
-                value={selectedReport}
-                onChange={(e) => setSelectedReport(e.target.value)}
-                className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-              >
+            <Field label="For which report?" className="mt-2">
+              <Select value={selectedReport} onChange={(e) => setSelectedReport(e.target.value)}>
                 {reports.map((r) => (
                   <option key={r._id} value={r._id}>
                     {r.vehicle?.make} {r.vehicle?.model} — {r.description.slice(0, 40)}
                   </option>
                 ))}
-              </select>
-            </label>
+              </Select>
+            </Field>
 
             <div className="mt-3 space-y-2">
               {available.length === 0 && (
-                <p className="text-sm text-slate-500">No open slots right now — check back later.</p>
+                <p className="text-sm text-steel">No open slots right now — check back later.</p>
               )}
               {available.map((slot) => (
-                <div
-                  key={slot._id}
-                  className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3"
-                >
+                <Card key={slot._id} className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="font-mono text-sm font-medium text-ink">
                       {new Date(slot.startTime).toLocaleString()} ({slot.durationMinutes} min)
                     </p>
-                    <p className="text-xs text-slate-500">with {slot.mechanic?.name}</p>
+                    <p className="text-xs text-steel">with {slot.mechanic?.name}</p>
                   </div>
-                  <button
-                    onClick={() => handleBook(slot._id)}
-                    disabled={bookingId === slot._id}
-                    className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
-                  >
-                    {bookingId === slot._id ? 'Booking...' : 'Book'}
-                  </button>
-                </div>
+                  <Button onClick={() => handleBook(slot._id)} disabled={bookingId === slot._id} className="px-3 py-1.5 text-xs">
+                    {bookingId === slot._id ? 'Booking…' : 'Book'}
+                  </Button>
+                </Card>
               ))}
             </div>
           </section>
 
           <section className="mt-8">
-            <h2 className="text-lg font-semibold text-slate-900">My Bookings</h2>
+            <h2 className="font-display text-xl tracking-wide text-ink">My Bookings</h2>
             <div className="mt-3 space-y-2">
-              {bookings.length === 0 && <p className="text-sm text-slate-500">No bookings yet.</p>}
+              {bookings.length === 0 && <p className="text-sm text-steel">No bookings yet.</p>}
               {bookings.map((b) => (
-                <div
-                  key={b._id}
-                  className="flex items-center justify-between rounded-lg border border-slate-200 bg-white p-3"
-                >
+                <Card key={b._id} ticket className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-slate-900">
+                    <p className="font-mono text-sm font-medium text-ink">
                       {new Date(b.startTime).toLocaleString()}
                     </p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-steel">
                       with {b.mechanic?.name} — {b.faultReport?.description}
                     </p>
                   </div>
@@ -142,13 +131,13 @@ export default function Appointments() {
                     {(b.status === 'requested' || b.status === 'confirmed') && (
                       <button
                         onClick={() => handleCancel(b._id)}
-                        className="text-sm font-medium text-red-600 hover:text-red-800"
+                        className="text-sm font-medium text-alert hover:text-alert/70"
                       >
                         Cancel
                       </button>
                     )}
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           </section>
