@@ -9,6 +9,7 @@ import Vehicles from './pages/Vehicles';
 import ReportFault from './pages/ReportFault';
 import MyReports from './pages/MyReports';
 import ReportDetail from './pages/ReportDetail';
+import MechanicDashboard from './pages/MechanicDashboard';
 
 function App() {
   return (
@@ -48,6 +49,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ReportDetail />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/mechanic"
+            element={
+              <ProtectedRoute role="mechanic">
+                <MechanicDashboard />
               </ProtectedRoute>
             }
           />

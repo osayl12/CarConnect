@@ -52,6 +52,38 @@ async function getMyFaultReports(req, res, next) {
   }
 }
 
+const URGENCY_RANK = { high: 3, medium: 2, low: 1 };
+
+// Section 2.4: mechanic can view all incoming reports. Section 2.9: manual
+// filtering/sorting — the mechanic decides priority, the system just helps
+// them see it (status/urgency filters, sort by newest/oldest/urgency).
+async function getAllFaultReports(req, res, next) {
+  try {
+    const { status, urgency, sort } = req.query;
+    const filter = {};
+    if (status) filter.status = status;
+    if (urgency) filter.urgency = urgency;
+
+    let query = FaultReport.find(filter)
+      .populate('vehicle', 'make model year')
+      .populate('customer', 'name email phone');
+
+    query = query.sort(sort === 'oldest' ? 'createdAt' : '-createdAt');
+
+    let reports = await query;
+
+    if (sort === 'urgency') {
+      reports = [...reports].sort(
+        (a, b) => (URGENCY_RANK[b.urgency] || 0) - (URGENCY_RANK[a.urgency] || 0)
+      );
+    }
+
+    res.json({ reports: reports.map(presentReport) });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // Section 2.4: any mechanic can open any report. A customer can only open
 // their own.
 async function getFaultReport(req, res, next) {
@@ -78,4 +110,4 @@ async function getFaultReport(req, res, next) {
   }
 }
 
-module.exports = { createFaultReport, getMyFaultReports, getFaultReport };
+module.exports = { createFaultReport, getMyFaultReports, getAllFaultReports, getFaultReport };

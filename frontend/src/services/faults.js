@@ -5,4 +5,7 @@ export const createFaultReport = (formData) =>
 
 export const listMyFaultReports = () => api.get('/faults/mine').then((r) => r.data.reports);
 
+export const listAllFaultReports = (params) =>
+  api.get('/faults', { params }).then((r) => r.data.reports);
+
 export const getFaultReport = (id) => api.get(`/faults/${id}`).then((r) => r.data.report);

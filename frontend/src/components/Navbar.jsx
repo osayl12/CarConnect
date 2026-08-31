@@ -36,6 +36,11 @@ export default function Navbar() {
                   </Link>
                 </>
               )}
+              {user.role === 'mechanic' && (
+                <Link to="/mechanic" className="font-medium text-slate-700 hover:text-slate-900">
+                  Dashboard
+                </Link>
+              )}
               <span className="text-slate-600">
                 {user.name} <span className="text-slate-400">({user.role})</span>
               </span>

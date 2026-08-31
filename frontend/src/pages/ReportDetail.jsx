@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getFaultReport } from '../services/faults';
+import { useAuth } from '../hooks/useAuth';
 import StatusBadge from '../components/StatusBadge';
+import UrgencyTag from '../components/UrgencyTag';
 
 export default function ReportDetail() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [report, setReport] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -22,7 +25,10 @@ export default function ReportDetail() {
 
   return (
     <div className="mx-auto mt-8 max-w-2xl px-4 pb-10">
-      <Link to="/my-reports" className="text-sm text-slate-500 hover:text-slate-700">
+      <Link
+        to={user?.role === 'mechanic' ? '/mechanic' : '/my-reports'}
+        className="text-sm text-slate-500 hover:text-slate-700"
+      >
         &larr; Back to reports
       </Link>
 
@@ -40,6 +46,18 @@ export default function ReportDetail() {
       </div>
 
       <div className="mt-6 space-y-4 rounded-lg border border-slate-200 bg-white p-5">
+        {/* Section 2.4: mechanic can see customer info. Not shown to the
+            customer viewing their own report — it's just their own details. */}
+        {user?.role === 'mechanic' && (
+          <div>
+            <h2 className="text-sm font-semibold text-slate-700">Reported by</h2>
+            <p className="mt-1 text-sm text-slate-900">{report.customer?.name}</p>
+            <p className="text-sm text-slate-500">
+              {[report.customer?.email, report.customer?.phone].filter(Boolean).join(' · ')}
+            </p>
+          </div>
+        )}
+
         <div>
           <h2 className="text-sm font-semibold text-slate-700">Description</h2>
           <p className="mt-1 whitespace-pre-wrap text-sm text-slate-900">{report.description}</p>
@@ -54,7 +72,9 @@ export default function ReportDetail() {
 
         <div>
           <h2 className="text-sm font-semibold text-slate-700">Urgency</h2>
-          <p className="mt-1 text-sm capitalize text-slate-900">{report.urgency}</p>
+          <div className="mt-1">
+            <UrgencyTag urgency={report.urgency} />
+          </div>
         </div>
 
         {report.vehicle?.vin && (
