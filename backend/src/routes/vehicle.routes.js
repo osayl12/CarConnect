@@ -5,6 +5,7 @@ const {
   getVehicle,
   updateVehicle,
   deleteVehicle,
+  getRepairRecord,
 } = require('../controllers/vehicle.controller');
 const { protect, requireRole } = require('../middleware/auth');
 
@@ -15,5 +16,6 @@ router.use(protect, requireRole('customer'));
 
 router.route('/').post(createVehicle).get(getMyVehicles);
 router.route('/:id').get(getVehicle).put(updateVehicle).delete(deleteVehicle);
+router.get('/:id/repair-record', getRepairRecord);
 
 module.exports = router;

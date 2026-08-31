@@ -1,4 +1,6 @@
 const Vehicle = require('../models/Vehicle');
+const FaultReport = require('../models/FaultReport');
+const Appointment = require('../models/Appointment');
 
 const EDITABLE_FIELDS = ['make', 'model', 'year', 'vin', 'licensePlate', 'color'];
 
@@ -84,4 +86,46 @@ async function deleteVehicle(req, res, next) {
   }
 }
 
-module.exports = { createVehicle, getMyVehicles, getVehicle, updateVehicle, deleteVehicle };
+// Section 2.10: basic repair record — current status, latest repair note,
+// last appointment, and what problem was in the car. Deliberately just the
+// latest fault report for this vehicle, not a full history (section 2.10:
+// "not a full long-term repair history system").
+async function getRepairRecord(req, res, next) {
+  try {
+    const vehicle = await Vehicle.findOne({ _id: req.params.id, owner: req.user._id });
+    if (!vehicle) {
+      res.status(404);
+      throw new Error('Vehicle not found');
+    }
+
+    const latestReport = await FaultReport.findOne({ vehicle: vehicle._id }).sort('-createdAt');
+    if (!latestReport) {
+      return res.json({ record: null });
+    }
+
+    const lastAppointment = await Appointment.findOne({ faultReport: latestReport._id })
+      .sort('-startTime')
+      .select('startTime durationMinutes status');
+
+    res.json({
+      record: {
+        faultReportId: latestReport._id,
+        problem: latestReport.description,
+        status: latestReport.status,
+        latestNote: latestReport.quote?.notes || null,
+        lastAppointment,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = {
+  createVehicle,
+  getMyVehicles,
+  getVehicle,
+  updateVehicle,
+  deleteVehicle,
+  getRepairRecord,
+};
