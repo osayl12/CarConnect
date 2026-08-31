@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { listVehicles } from '../services/vehicles';
 import { createFaultReport } from '../services/faults';
+import { Field, Input, Textarea, Select } from '../components/ui/Field';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
 
 export default function ReportFault() {
   const navigate = useNavigate();
@@ -50,10 +53,8 @@ export default function ReportFault() {
   if (!loadingVehicles && vehicles.length === 0) {
     return (
       <div className="mx-auto mt-16 max-w-md px-4 text-center">
-        <p className="text-slate-600">
-          Add a vehicle before reporting a problem.
-        </p>
-        <Link to="/vehicles" className="mt-2 inline-block font-medium text-slate-900 underline">
+        <p className="text-steel">Add a vehicle before reporting a problem.</p>
+        <Link to="/vehicles" className="mt-2 inline-block font-semibold text-signal underline">
           Go to My Vehicles
         </Link>
       </div>
@@ -62,85 +63,68 @@ export default function ReportFault() {
 
   return (
     <div className="mx-auto mt-10 max-w-lg px-4 pb-10">
-      <h1 className="text-2xl font-bold text-slate-900">Report a Problem</h1>
+      <p className="font-mono text-xs font-semibold uppercase tracking-widest text-steel">New ticket</p>
+      <h1 className="font-display text-4xl tracking-wide text-ink">Report a Problem</h1>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Vehicle</label>
-          <select
-            name="vehicle"
-            value={form.vehicle}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          >
-            {vehicles.map((v) => (
-              <option key={v._id} value={v._id}>
-                {v.year ? `${v.year} ` : ''}
-                {v.make} {v.model}
-              </option>
-            ))}
-          </select>
-        </div>
+      <Card className="mt-6 p-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Field label="Vehicle">
+            <Select name="vehicle" value={form.vehicle} onChange={handleChange}>
+              {vehicles.map((v) => (
+                <option key={v._id} value={v._id}>
+                  {v.year ? `${v.year} ` : ''}
+                  {v.make} {v.model}
+                </option>
+              ))}
+            </Select>
+          </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">What's wrong?</label>
-          <textarea
-            name="description"
-            required
-            rows={4}
-            value={form.description}
-            onChange={handleChange}
-            placeholder="Describe the issue..."
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+          <Field label="What's wrong?">
+            <Textarea
+              name="description"
+              required
+              rows={4}
+              value={form.description}
+              onChange={handleChange}
+              placeholder="Describe the issue…"
+            />
+          </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Error code (optional)</label>
-          <input
-            type="text"
-            name="errorCode"
-            value={form.errorCode}
-            onChange={handleChange}
-            placeholder="e.g. P0420"
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+          <Field label="Error code (optional)" hint="Straight from the dashboard, if you have one">
+            <Input
+              type="text"
+              name="errorCode"
+              value={form.errorCode}
+              onChange={handleChange}
+              placeholder="e.g. P0420"
+              className="font-mono"
+            />
+          </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Urgency</label>
-          <select
-            name="urgency"
-            value={form.urgency}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          >
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
-          </select>
-        </div>
+          <Field label="Urgency">
+            <Select name="urgency" value={form.urgency} onChange={handleChange}>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+            </Select>
+          </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Photo (optional)</label>
-          <input
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            onChange={(e) => setImage(e.target.files?.[0] || null)}
-            className="mt-1 w-full text-sm"
-          />
-        </div>
+          <Field label="Photo (optional)">
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={(e) => setImage(e.target.files?.[0] || null)}
+              className="mt-1 w-full text-sm text-steel file:mr-3 file:rounded-sm file:border-0 file:bg-ink file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white"
+            />
+          </Field>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-alert">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full rounded-md bg-slate-900 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
-        >
-          {submitting ? 'Submitting...' : 'Submit report'}
-        </button>
-      </form>
+          <Button type="submit" disabled={submitting} className="w-full">
+            {submitting ? 'Submitting…' : 'Submit report'}
+          </Button>
+        </form>
+      </Card>
     </div>
   );
 }
