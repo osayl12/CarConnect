@@ -4,6 +4,9 @@ import { listAllFaultReports } from '../services/faults';
 import { FAULT_STATUSES, FAULT_STATUS_META } from '../constants/faultStatus';
 import StatusBadge from '../components/StatusBadge';
 import UrgencyTag from '../components/UrgencyTag';
+import PageHeader from '../components/ui/PageHeader';
+import EmptyState from '../components/ui/EmptyState';
+import Card from '../components/ui/Card';
 
 const STATUS_OPTIONS = [
   { value: '', label: 'All statuses' },
@@ -23,14 +26,16 @@ const SORT_OPTIONS = [
   { value: 'urgency', label: 'Urgency (high first)' },
 ];
 
-function Select({ label, value, onChange, options }) {
+function FilterSelect({ label, value, onChange, options }) {
   return (
     <label className="text-sm">
-      <span className="mr-2 font-medium text-slate-700">{label}</span>
+      <span className="mr-2 font-mono text-xs font-semibold uppercase tracking-wide text-steel">
+        {label}
+      </span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-md border border-slate-300 px-2 py-1.5 text-sm focus:border-slate-500 focus:outline-none"
+        className="rounded-sm border border-ink/20 bg-white px-2 py-1.5 text-sm text-ink focus:border-signal focus:outline-none"
       >
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -67,25 +72,26 @@ export default function MechanicDashboard() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="text-2xl font-bold text-slate-900">Incoming Fault Reports</h1>
-      <p className="mt-1 text-sm text-slate-500">
-        Filter and sort to decide which request to handle first — the choice is yours.
-      </p>
+      <PageHeader
+        eyebrow="Shop floor"
+        title="Incoming Fault Reports"
+        subtitle="Filter and sort to decide which request to handle first — the choice is yours."
+      />
 
-      <div className="mt-4 flex flex-wrap gap-4 rounded-lg border border-slate-200 bg-white p-3">
-        <Select
+      <div className="mt-4 flex flex-wrap gap-4 rounded-sm border border-ink/10 bg-white p-3 shadow-sm">
+        <FilterSelect
           label="Status"
           value={filters.status}
           onChange={(v) => setFilters((f) => ({ ...f, status: v }))}
           options={STATUS_OPTIONS}
         />
-        <Select
+        <FilterSelect
           label="Urgency"
           value={filters.urgency}
           onChange={(v) => setFilters((f) => ({ ...f, urgency: v }))}
           options={URGENCY_OPTIONS}
         />
-        <Select
+        <FilterSelect
           label="Sort"
           value={filters.sort}
           onChange={(v) => setFilters((f) => ({ ...f, sort: v }))}
@@ -93,43 +99,44 @@ export default function MechanicDashboard() {
         />
       </div>
 
-      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
-      {loading && <p className="mt-6 text-sm text-slate-500">Loading...</p>}
+      {error && <p className="mt-4 text-sm text-alert">{error}</p>}
+      {loading && <p className="mt-6 text-sm text-steel">Loading…</p>}
       {!loading && reports.length === 0 && (
-        <p className="mt-6 text-sm text-slate-500">No reports match these filters.</p>
+        <div className="mt-6">
+          <EmptyState title="Nothing here" message="No reports match these filters." />
+        </div>
       )}
 
       <div className="mt-6 space-y-3">
         {reports.map((report) => (
-          <Link
-            key={report._id}
-            to={`/reports/${report._id}`}
-            className="block rounded-lg border border-slate-200 bg-white p-4 hover:border-slate-300"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="font-medium text-slate-900">
-                  {report.vehicle?.year ? `${report.vehicle.year} ` : ''}
-                  {report.vehicle?.make} {report.vehicle?.model}
-                  <span className="ml-2 text-sm font-normal text-slate-500">
-                    · {report.customer?.name}
-                  </span>
-                </p>
-                <p className="mt-1 line-clamp-2 text-sm text-slate-600">{report.description}</p>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  {report.errorCode && (
-                    <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-600">
-                      {report.errorCode}
+          <Link key={report._id} to={`/reports/${report._id}`} className="block">
+            <Card ticket className="hover:border-ink/25">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="font-mono text-xs text-steel">#{report._id.slice(-6).toUpperCase()}</p>
+                  <p className="mt-0.5 font-display text-xl tracking-wide text-ink">
+                    {report.vehicle?.year ? `${report.vehicle.year} ` : ''}
+                    {report.vehicle?.make} {report.vehicle?.model}
+                    <span className="ml-2 font-sans text-sm font-normal text-steel">
+                      · {report.customer?.name}
                     </span>
-                  )}
-                  <UrgencyTag urgency={report.urgency} />
-                  <span className="text-xs text-slate-400">
-                    {new Date(report.createdAt).toLocaleDateString()}
-                  </span>
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-sm text-steel">{report.description}</p>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    {report.errorCode && (
+                      <span className="rounded bg-paper px-2 py-0.5 font-mono text-xs text-steel">
+                        {report.errorCode}
+                      </span>
+                    )}
+                    <UrgencyTag urgency={report.urgency} />
+                    <span className="font-mono text-xs text-steel/70">
+                      {new Date(report.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
                 </div>
+                <StatusBadge status={report.status} />
               </div>
-              <StatusBadge status={report.status} />
-            </div>
+            </Card>
           </Link>
         ))}
       </div>
