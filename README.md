@@ -67,35 +67,39 @@ directly) for later deployment to Oracle Cloud.
 
 ## CI/CD
 
-GitHub Actions (`.github/workflows/ci.yml`) runs lint + build for both apps on
-every push/PR to `main`. It needs no secrets — it never touches the database.
-Deployment stays manual per the project plan (section 10.2/11 of the scope doc):
-build the production images on the server and run
-`docker compose -f docker-compose.prod.yml up -d --build`.
+GitHub Actions (`.github/workflows/ci.yml`) runs on every push/PR to `main`:
 
-### GitHub Secrets & Variables (for later — deployment, not yet needed)
+1. **backend** / **frontend** jobs — install deps, lint, build. No secrets needed.
+2. **deploy** job — only on an actual push to `main` (never on a PR), and only
+   if both jobs above pass: builds the production images, pushes them to
+   Docker Hub, then SSHes into the Oracle Cloud VM to pull and restart them
+   (`docker-compose.prod.yml`).
 
-Repo Settings → **Secrets and variables → Actions**. Two kinds:
+This deploys automatically on every push to `main` — a deliberate choice made
+when setting this up, which is more automated than the project scope doc's
+own suggested "manual, controlled deployment" (section 10.2/11). Worth
+reviewing before this project is handed in/graded, if strict adherence to
+the documented plan matters.
 
-- **Secrets** — encrypted, write-only once saved (even you can't view them
-  again in the UI). Use for anything sensitive: passwords, tokens, private keys.
-- **Variables** — plain text, visible in the UI and in workflow logs. Use for
-  non-sensitive config only.
+### GitHub Secrets in use
 
-Nothing needs to be added there today — CI doesn't use any. When we actually
-deploy to Oracle Cloud, these are the ones that will matter:
+Repo Settings → **Secrets and variables → Actions**:
 
-| Name | Kind | Purpose |
-|---|---|---|
-| `PROD_MONGO_URI` | Secret | Production DB connection string (keep separate from your dev Atlas URI/DB) |
-| `PROD_JWT_SECRET` | Secret | Production token-signing key (must differ from the dev one in `backend/.env`) |
-| `ORACLE_SSH_PRIVATE_KEY` | Secret | Private key CI/you would use to SSH into the Oracle Cloud VM to deploy |
-| `ORACLE_HOST` | Variable | The VM's IP/hostname |
-| `ORACLE_USER` | Variable | SSH username on the VM |
-| `GHCR_TOKEN` / `DOCKERHUB_TOKEN` | Secret | Only needed if CI builds and pushes images to a registry instead of building on the server directly |
+| Name | Purpose |
+|---|---|
+| `DOCKERHUB_USERNAME` | Docker Hub account the images are pushed to |
+| `DOCKERHUB_TOKEN` | Docker Hub access token (not your account password) |
+| `SSH_HOST` | Oracle Cloud VM's public IP/hostname |
+| `SSH_USER` | SSH username on the VM |
+| `SSH_KEY` | Private key matching a public key in that user's `~/.ssh/authorized_keys` |
 
-I'll flag exactly which of these to create when we reach the deployment
-milestone — none of that infrastructure (Oracle Cloud VM, registry) exists yet.
+### One-time server setup
+
+Before the deploy job can succeed, the VM needs Docker installed, this repo
+cloned to `~/carconnect`, `backend/.env` created with real production values,
+and a `.env` (repo root, next to `docker-compose.prod.yml`) containing
+`DOCKERHUB_USERNAME=<your docker hub username>`. See chat history for the
+exact commands used — do this once, manually, over SSH.
 
 ## Scripts
 

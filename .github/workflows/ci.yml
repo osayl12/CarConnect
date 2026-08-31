@@ -40,3 +40,48 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+
+  # Builds + pushes production images to Docker Hub, then SSHes into the
+  # Oracle Cloud VM to pull and restart them. Only after both jobs above
+  # pass, and only on an actual push to main (never on a PR).
+  deploy:
+    name: Build, push, and deploy
+    needs: [backend, frontend]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          target: production
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/carconnect-backend:latest
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          target: production
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/carconnect-frontend:latest
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd ~/carconnect
+            docker compose -f docker-compose.prod.yml pull
+            docker compose -f docker-compose.prod.yml up -d
+            docker image prune -f

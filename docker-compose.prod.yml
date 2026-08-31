@@ -1,16 +1,19 @@
-# Production-shaped topology, for deploying to Oracle Cloud behind DuckDNS.
-# Builds optimized images (no hot-reload); nginx serves the frontend build
-# and reverse-proxies /api and /uploads to the backend over the internal
-# compose network — the backend is not exposed to the host directly.
+# Production topology, deployed to Oracle Cloud behind DuckDNS. Pulls
+# pre-built images from Docker Hub (built and pushed by .github/workflows/ci.yml
+# on every push to main) rather than building on the server. nginx serves the
+# frontend build and reverse-proxies /api and /uploads to the backend over the
+# internal compose network — the backend is not exposed to the host directly.
+#
+# Requires a .env file next to this one on the server with:
+#   DOCKERHUB_USERNAME=<your docker hub username>
 #
 # Usage on the server:
-#   docker compose -f docker-compose.prod.yml up -d --build
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d
 
 services:
   backend:
-    build:
-      context: ./backend
-      target: production
+    image: ${DOCKERHUB_USERNAME}/carconnect-backend:latest
     env_file:
       - ./backend/.env
     volumes:
@@ -20,9 +23,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build:
-      context: ./frontend
-      target: production
+    image: ${DOCKERHUB_USERNAME}/carconnect-frontend:latest
     ports:
       - "80:80"
     depends_on:
