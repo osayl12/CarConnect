@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { Field, Input, Textarea } from './ui/Field';
+import Button from './ui/Button';
 
 // Section 2.5: mechanic's repair response — price, time, parts, notes.
 // Note: the parent renders this with key={report._id}, so switching to a
@@ -31,70 +33,54 @@ export default function QuoteForm({ initialQuote, onSubmit, submitting }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 rounded-lg border border-slate-200 bg-white p-4">
-      <h2 className="text-sm font-semibold text-slate-700">
+    <form onSubmit={handleSubmit} className="space-y-3 rounded-sm border border-ink/10 bg-white p-4 shadow-sm">
+      <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-steel">
         {initialQuote ? 'Update your response' : 'Send a repair response'}
       </h2>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <label className="block text-sm">
-          <span className="font-medium text-slate-700">Estimated price ($)</span>
-          <input
+        <Field label="Estimated price ($)">
+          <Input
             type="number"
             name="price"
             min="0"
             step="0.01"
             value={form.price}
             onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
+            className="font-mono"
           />
-        </label>
+        </Field>
 
-        <label className="block text-sm">
-          <span className="font-medium text-slate-700">Estimated repair time</span>
-          <input
+        <Field label="Estimated repair time">
+          <Input
             type="text"
             name="estimatedTime"
             placeholder="e.g. 2 days"
             value={form.estimatedTime}
             onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
           />
-        </label>
+        </Field>
       </div>
 
-      <label className="block text-sm">
-        <span className="font-medium text-slate-700">Parts / equipment needed (one per line, optional)</span>
-        <textarea
+      <Field label="Parts / equipment needed (one per line, optional)">
+        <Textarea
           name="parts"
           rows={3}
           value={form.parts}
           onChange={handleChange}
           placeholder={'Brake pads\nRotor'}
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
         />
-      </label>
+      </Field>
 
-      <label className="block text-sm">
-        <span className="font-medium text-slate-700">Repair notes (optional)</span>
-        <textarea
-          name="notes"
-          rows={3}
-          value={form.notes}
-          onChange={handleChange}
-          className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-        />
-      </label>
+      <Field label="Repair notes (optional)">
+        <Textarea name="notes" rows={3} value={form.notes} onChange={handleChange} />
+      </Field>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-alert">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={submitting}
-        className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
-      >
-        {submitting ? 'Sending...' : initialQuote ? 'Update response' : 'Send response'}
-      </button>
+      <Button type="submit" disabled={submitting}>
+        {submitting ? 'Sending…' : initialQuote ? 'Update response' : 'Send response'}
+      </Button>
     </form>
   );
 }

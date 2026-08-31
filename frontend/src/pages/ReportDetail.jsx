@@ -6,6 +6,7 @@ import { FAULT_STATUSES, FAULT_STATUS_META } from '../constants/faultStatus';
 import StatusBadge from '../components/StatusBadge';
 import UrgencyTag from '../components/UrgencyTag';
 import QuoteForm from '../components/QuoteForm';
+import Card from '../components/ui/Card';
 
 export default function ReportDetail() {
   const { id } = useParams();
@@ -49,26 +50,27 @@ export default function ReportDetail() {
     }
   };
 
-  if (loading) return <p className="mx-auto mt-10 max-w-2xl px-4 text-sm text-slate-500">Loading...</p>;
-  if (error) return <p className="mx-auto mt-10 max-w-2xl px-4 text-sm text-red-600">{error}</p>;
+  if (loading) return <p className="mx-auto mt-10 max-w-2xl px-4 text-sm text-steel">Loading…</p>;
+  if (error) return <p className="mx-auto mt-10 max-w-2xl px-4 text-sm text-alert">{error}</p>;
   if (!report) return null;
 
   return (
     <div className="mx-auto mt-8 max-w-2xl px-4 pb-10">
       <Link
         to={user?.role === 'mechanic' ? '/mechanic' : '/my-reports'}
-        className="text-sm text-slate-500 hover:text-slate-700"
+        className="text-sm text-steel hover:text-ink"
       >
         &larr; Back to reports
       </Link>
 
       <div className="mt-4 flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <p className="font-mono text-xs text-steel">#{report._id.slice(-6).toUpperCase()}</p>
+          <h1 className="mt-0.5 font-display text-4xl tracking-wide text-ink">
             {report.vehicle?.year ? `${report.vehicle.year} ` : ''}
             {report.vehicle?.make} {report.vehicle?.model}
           </h1>
-          <p className="text-sm text-slate-500">
+          <p className="mt-1 font-mono text-xs text-steel">
             Reported {new Date(report.createdAt).toLocaleString()}
           </p>
         </div>
@@ -81,7 +83,7 @@ export default function ReportDetail() {
               value={report.status}
               disabled={statusSaving}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 focus:border-slate-500 focus:outline-none disabled:opacity-50"
+              className="rounded-sm border border-ink/20 bg-white px-3 py-1.5 font-mono text-xs font-semibold uppercase tracking-wide text-ink focus:border-signal focus:outline-none disabled:opacity-50"
             >
               {FAULT_STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -94,35 +96,35 @@ export default function ReportDetail() {
           <StatusBadge status={report.status} />
         )}
       </div>
-      {statusError && <p className="mt-2 text-sm text-red-600">{statusError}</p>}
+      {statusError && <p className="mt-2 text-sm text-alert">{statusError}</p>}
 
-      <div className="mt-6 space-y-4 rounded-lg border border-slate-200 bg-white p-5">
+      <Card ticket className="mt-6 space-y-4 p-5">
         {/* Section 2.4: mechanic can see customer info. Not shown to the
             customer viewing their own report — it's just their own details. */}
         {user?.role === 'mechanic' && (
           <div>
-            <h2 className="text-sm font-semibold text-slate-700">Reported by</h2>
-            <p className="mt-1 text-sm text-slate-900">{report.customer?.name}</p>
-            <p className="text-sm text-slate-500">
+            <h2 className="text-sm font-semibold text-ink">Reported by</h2>
+            <p className="mt-1 text-sm text-ink">{report.customer?.name}</p>
+            <p className="text-sm text-steel">
               {[report.customer?.email, report.customer?.phone].filter(Boolean).join(' · ')}
             </p>
           </div>
         )}
 
         <div>
-          <h2 className="text-sm font-semibold text-slate-700">Description</h2>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-slate-900">{report.description}</p>
+          <h2 className="text-sm font-semibold text-ink">Description</h2>
+          <p className="mt-1 whitespace-pre-wrap text-sm text-ink">{report.description}</p>
         </div>
 
         {report.errorCode && (
           <div>
-            <h2 className="text-sm font-semibold text-slate-700">Error code</h2>
-            <p className="mt-1 text-sm text-slate-900">{report.errorCode}</p>
+            <h2 className="text-sm font-semibold text-ink">Error code</h2>
+            <p className="mt-1 font-mono text-sm text-ink">{report.errorCode}</p>
           </div>
         )}
 
         <div>
-          <h2 className="text-sm font-semibold text-slate-700">Urgency</h2>
+          <h2 className="text-sm font-semibold text-ink">Urgency</h2>
           <div className="mt-1">
             <UrgencyTag urgency={report.urgency} />
           </div>
@@ -130,41 +132,45 @@ export default function ReportDetail() {
 
         {report.vehicle?.vin && (
           <div>
-            <h2 className="text-sm font-semibold text-slate-700">VIN</h2>
-            <p className="mt-1 text-sm text-slate-900">{report.vehicle.vin}</p>
+            <h2 className="text-sm font-semibold text-ink">VIN</h2>
+            <p className="mt-1 font-mono text-sm text-ink">{report.vehicle.vin}</p>
           </div>
         )}
 
         {report.imageUrl && (
           <div>
-            <h2 className="text-sm font-semibold text-slate-700">Photo</h2>
+            <h2 className="text-sm font-semibold text-ink">Photo</h2>
             <img
               src={report.imageUrl}
               alt="Reported issue"
-              className="mt-2 max-h-80 rounded-md border border-slate-200"
+              className="mt-2 max-h-80 rounded-sm border border-ink/10"
             />
           </div>
         )}
-      </div>
+      </Card>
 
       {/* Section 2.5: the mechanic's response is shown to the customer too. */}
       {report.quote && (
-        <div className="mt-4 space-y-3 rounded-lg border border-slate-200 bg-white p-5">
-          <h2 className="text-sm font-semibold text-slate-700">Mechanic's Response</h2>
+        <Card className="mt-4 space-y-3 p-5">
+          <h2 className="font-mono text-xs font-semibold uppercase tracking-widest text-steel">
+            Mechanic's Response
+          </h2>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
-              <p className="text-xs text-slate-500">Estimated price</p>
-              <p className="text-sm font-medium text-slate-900">${report.quote.price.toFixed(2)}</p>
+              <p className="text-xs text-steel">Estimated price</p>
+              <p className="font-mono text-lg font-medium text-ink">
+                ${report.quote.price.toFixed(2)}
+              </p>
             </div>
             <div>
-              <p className="text-xs text-slate-500">Estimated repair time</p>
-              <p className="text-sm font-medium text-slate-900">{report.quote.estimatedTime}</p>
+              <p className="text-xs text-steel">Estimated repair time</p>
+              <p className="text-sm font-medium text-ink">{report.quote.estimatedTime}</p>
             </div>
           </div>
           {report.quote.parts?.length > 0 && (
             <div>
-              <p className="text-xs text-slate-500">Parts / equipment</p>
-              <ul className="mt-1 list-inside list-disc text-sm text-slate-900">
+              <p className="text-xs text-steel">Parts / equipment</p>
+              <ul className="mt-1 list-inside list-disc text-sm text-ink">
                 {report.quote.parts.map((part) => (
                   <li key={part}>{part}</li>
                 ))}
@@ -173,19 +179,19 @@ export default function ReportDetail() {
           )}
           {report.quote.notes && (
             <div>
-              <p className="text-xs text-slate-500">Notes</p>
-              <p className="whitespace-pre-wrap text-sm text-slate-900">{report.quote.notes}</p>
+              <p className="text-xs text-steel">Notes</p>
+              <p className="whitespace-pre-wrap text-sm text-ink">{report.quote.notes}</p>
             </div>
           )}
-          <p className="text-xs text-slate-400">
+          <p className="font-mono text-xs text-steel/70">
             Responded {new Date(report.quote.respondedAt).toLocaleString()}
           </p>
-        </div>
+        </Card>
       )}
 
       {user?.role === 'mechanic' && (
         <div className="mt-4">
-          {quoteError && <p className="mb-2 text-sm text-red-600">{quoteError}</p>}
+          {quoteError && <p className="mb-2 text-sm text-alert">{quoteError}</p>}
           <QuoteForm
             key={report.quote ? 'edit' : 'new'}
             initialQuote={report.quote}
