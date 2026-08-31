@@ -110,4 +110,59 @@ async function getFaultReport(req, res, next) {
   }
 }
 
-module.exports = { createFaultReport, getMyFaultReports, getAllFaultReports, getFaultReport };
+// Section 2.5: mechanic sends a repair response (price, time, parts, notes).
+async function respondWithQuote(req, res, next) {
+  try {
+    const { price, estimatedTime, parts, notes } = req.body;
+
+    if (price === undefined || price === null || price === '') {
+      res.status(400);
+      throw new Error('Estimated price is required');
+    }
+    const numericPrice = Number(price);
+    if (Number.isNaN(numericPrice) || numericPrice < 0) {
+      res.status(400);
+      throw new Error('Estimated price must be a positive number');
+    }
+    if (!estimatedTime) {
+      res.status(400);
+      throw new Error('Estimated repair time is required');
+    }
+
+    const report = await FaultReport.findById(req.params.id);
+    if (!report) {
+      res.status(404);
+      throw new Error('Fault report not found');
+    }
+
+    report.quote = {
+      price: numericPrice,
+      estimatedTime,
+      parts: Array.isArray(parts) ? parts.filter(Boolean) : parts ? [parts] : [],
+      notes: notes || '',
+      respondedAt: new Date(),
+    };
+    // A quote is the mechanic's first substantive response — move the
+    // report out of "waiting" but don't regress a report that's already
+    // further along (e.g. an appointment already scheduled).
+    if (report.status === 'waiting_for_mechanic') {
+      report.status = 'under_review';
+    }
+
+    await report.save();
+    await report.populate('vehicle', 'make model year vin licensePlate color');
+    await report.populate('customer', 'name email phone');
+
+    res.json({ report: presentReport(report) });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = {
+  createFaultReport,
+  getMyFaultReports,
+  getAllFaultReports,
+  getFaultReport,
+  respondWithQuote,
+};

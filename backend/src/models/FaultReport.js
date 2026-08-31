@@ -9,6 +9,21 @@ const STATUSES = [
   'completed',
 ];
 
+// Section 2.5: mechanic's repair response/quote. Embedded rather than a
+// separate collection — this is a lightweight MVP (section 2.10: "not a
+// full long-term repair history system"), so only the latest quote matters,
+// not a history of revisions.
+const quoteSchema = new mongoose.Schema(
+  {
+    price: { type: Number, required: true, min: 0 },
+    estimatedTime: { type: String, required: true, trim: true }, // free text, e.g. "2 days"
+    parts: [{ type: String, trim: true }],
+    notes: { type: String, trim: true },
+    respondedAt: { type: Date, default: Date.now },
+  },
+  { _id: false }
+);
+
 const faultReportSchema = new mongoose.Schema(
   {
     customer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true },
@@ -22,6 +37,7 @@ const faultReportSchema = new mongoose.Schema(
     // Feeds manual mechanic prioritization/filtering (section 2.9).
     urgency: { type: String, enum: ['low', 'medium', 'high'], default: 'medium' },
     status: { type: String, enum: STATUSES, default: 'waiting_for_mechanic' },
+    quote: { type: quoteSchema, default: undefined },
   },
   { timestamps: true }
 );

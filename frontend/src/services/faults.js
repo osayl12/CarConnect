@@ -9,3 +9,6 @@ export const listAllFaultReports = (params) =>
   api.get('/faults', { params }).then((r) => r.data.reports);
 
 export const getFaultReport = (id) => api.get(`/faults/${id}`).then((r) => r.data.report);
+
+export const respondWithQuote = (id, payload) =>
+  api.put(`/faults/${id}/quote`, payload).then((r) => r.data.report);

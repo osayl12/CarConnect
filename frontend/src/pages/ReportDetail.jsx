@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { getFaultReport } from '../services/faults';
+import { getFaultReport, respondWithQuote } from '../services/faults';
 import { useAuth } from '../hooks/useAuth';
 import StatusBadge from '../components/StatusBadge';
 import UrgencyTag from '../components/UrgencyTag';
+import QuoteForm from '../components/QuoteForm';
 
 export default function ReportDetail() {
   const { id } = useParams();
@@ -11,6 +12,8 @@ export default function ReportDetail() {
   const [report, setReport] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [quoteSubmitting, setQuoteSubmitting] = useState(false);
+  const [quoteError, setQuoteError] = useState('');
 
   useEffect(() => {
     getFaultReport(id)
@@ -18,6 +21,18 @@ export default function ReportDetail() {
       .catch((err) => setError(err.response?.data?.message || 'Could not load report'))
       .finally(() => setLoading(false));
   }, [id]);
+
+  const handleQuoteSubmit = async (payload) => {
+    setQuoteSubmitting(true);
+    setQuoteError('');
+    try {
+      setReport(await respondWithQuote(id, payload));
+    } catch (err) {
+      setQuoteError(err.response?.data?.message || 'Could not send response');
+    } finally {
+      setQuoteSubmitting(false);
+    }
+  };
 
   if (loading) return <p className="mx-auto mt-10 max-w-2xl px-4 text-sm text-slate-500">Loading...</p>;
   if (error) return <p className="mx-auto mt-10 max-w-2xl px-4 text-sm text-red-600">{error}</p>;
@@ -95,6 +110,54 @@ export default function ReportDetail() {
           </div>
         )}
       </div>
+
+      {/* Section 2.5: the mechanic's response is shown to the customer too. */}
+      {report.quote && (
+        <div className="mt-4 space-y-3 rounded-lg border border-slate-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-slate-700">Mechanic's Response</h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <div>
+              <p className="text-xs text-slate-500">Estimated price</p>
+              <p className="text-sm font-medium text-slate-900">${report.quote.price.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-slate-500">Estimated repair time</p>
+              <p className="text-sm font-medium text-slate-900">{report.quote.estimatedTime}</p>
+            </div>
+          </div>
+          {report.quote.parts?.length > 0 && (
+            <div>
+              <p className="text-xs text-slate-500">Parts / equipment</p>
+              <ul className="mt-1 list-inside list-disc text-sm text-slate-900">
+                {report.quote.parts.map((part) => (
+                  <li key={part}>{part}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {report.quote.notes && (
+            <div>
+              <p className="text-xs text-slate-500">Notes</p>
+              <p className="whitespace-pre-wrap text-sm text-slate-900">{report.quote.notes}</p>
+            </div>
+          )}
+          <p className="text-xs text-slate-400">
+            Responded {new Date(report.quote.respondedAt).toLocaleString()}
+          </p>
+        </div>
+      )}
+
+      {user?.role === 'mechanic' && (
+        <div className="mt-4">
+          {quoteError && <p className="mb-2 text-sm text-red-600">{quoteError}</p>}
+          <QuoteForm
+            key={report.quote ? 'edit' : 'new'}
+            initialQuote={report.quote}
+            onSubmit={handleQuoteSubmit}
+            submitting={quoteSubmitting}
+          />
+        </div>
+      )}
     </div>
   );
 }

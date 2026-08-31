@@ -42,7 +42,9 @@ async function login(req, res, next) {
       throw new Error('Email and password are required');
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // password now has select: false on the schema — opt back in since
+    // comparePassword needs the hash.
+    const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
     if (!user || !(await user.comparePassword(password))) {
       res.status(401);
       throw new Error('Invalid email or password');

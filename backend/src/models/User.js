@@ -11,7 +11,11 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-    password: { type: String, required: true, minlength: 6, select: true },
+    // select: false — excluded from every query by default (including
+    // populate('customer', 'name email ...') elsewhere in the app), not
+    // just from the JSON response. Login explicitly opts back in with
+    // .select('+password') where the hash is actually needed.
+    password: { type: String, required: true, minlength: 6, select: false },
     // Section 2.1: user type selection + role-based access control.
     role: { type: String, enum: ['customer', 'mechanic'], required: true },
     phone: { type: String, trim: true },
@@ -30,12 +34,15 @@ userSchema.methods.comparePassword = function comparePassword(candidate) {
   return bcrypt.compare(candidate, this.password);
 };
 
-// Never leak the password hash in API responses.
-userSchema.set('toJSON', {
-  transform: (_doc, ret) => {
-    delete ret.password;
-    return ret;
-  },
-});
+// Belt-and-suspenders: strip the hash on both serialization paths, in case
+// some query ever opts back in with .select('+password'). toJSON() covers
+// res.json(user); toObject() covers helpers elsewhere that call
+// doc.toObject() directly (e.g. fault.controller's presentReport).
+const stripPassword = (_doc, ret) => {
+  delete ret.password;
+  return ret;
+};
+userSchema.set('toJSON', { transform: stripPassword });
+userSchema.set('toObject', { transform: stripPassword });
 
 module.exports = mongoose.model('User', userSchema);
