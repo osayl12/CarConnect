@@ -10,6 +10,14 @@
 Car Connect is a web app connecting customers with mechanics for vehicle fault
 reporting, repair coordination, and appointment management.
 
+## Screenshots
+
+| Landing page | How it works |
+|---|---|
+| ![Landing page](./docs/screenshots/landing.png) | ![How it works](./docs/screenshots/how-it-works.png) |
+
+Live at [carconnect.duckdns.org](https://carconnect.duckdns.org).
+
 ## Stack
 
 - **Frontend:** React (Vite) + Tailwind CSS + React Router + Axios
