@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Field, Input } from '../components/ui/Field';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
 
 const initialForm = { name: '', email: '', password: '', role: 'customer', phone: '' };
 
@@ -25,92 +28,66 @@ export default function Register() {
 
   return (
     <div className="mx-auto mt-16 max-w-sm px-4">
-      <h1 className="text-2xl font-bold text-slate-900">Create an account</h1>
+      <p className="font-mono text-xs font-semibold uppercase tracking-widest text-steel">Get started</p>
+      <h1 className="font-display text-4xl tracking-wide text-ink">Create an account</h1>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        {/* Section 2.1: user type selection (customer or mechanic). */}
-        <div>
-          <label className="block text-sm font-medium text-slate-700">I am a...</label>
-          <div className="mt-1 grid grid-cols-2 gap-2">
-            {['customer', 'mechanic'].map((role) => (
-              <button
-                type="button"
-                key={role}
-                onClick={() => setForm({ ...form, role })}
-                className={`rounded-md border py-2 text-sm font-medium capitalize ${
-                  form.role === role
-                    ? 'border-slate-900 bg-slate-900 text-white'
-                    : 'border-slate-300 text-slate-700 hover:bg-slate-50'
-                }`}
-              >
-                {role}
-              </button>
-            ))}
+      <Card className="mt-6 p-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Section 2.1: user type selection (customer or mechanic). */}
+          <div>
+            <span className="text-sm font-semibold text-ink">I am a…</span>
+            <div className="mt-1 grid grid-cols-2 gap-2">
+              {['customer', 'mechanic'].map((role) => (
+                <button
+                  type="button"
+                  key={role}
+                  onClick={() => setForm({ ...form, role })}
+                  className={`rounded-sm border py-2 text-sm font-semibold capitalize transition-colors ${
+                    form.role === role
+                      ? 'border-ink bg-ink text-white'
+                      : 'border-ink/15 text-steel hover:border-ink/40'
+                  }`}
+                >
+                  {role}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Full name</label>
-          <input
-            type="text"
-            name="name"
-            required
-            value={form.name}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+          <Field label="Full name">
+            <Input type="text" name="name" required value={form.name} onChange={handleChange} />
+          </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Email</label>
-          <input
-            type="email"
-            name="email"
-            required
-            value={form.email}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+          <Field label="Email">
+            <Input type="email" name="email" required value={form.email} onChange={handleChange} />
+          </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Phone (optional)</label>
-          <input
-            type="tel"
-            name="phone"
-            value={form.phone}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+          <Field label="Phone (optional)">
+            <Input type="tel" name="phone" value={form.phone} onChange={handleChange} />
+          </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Password</label>
-          <input
-            type="password"
-            name="password"
-            required
-            minLength={6}
-            value={form.password}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+          <Field label="Password">
+            <Input
+              type="password"
+              name="password"
+              required
+              minLength={6}
+              value={form.password}
+              onChange={handleChange}
+            />
+          </Field>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-alert">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-md bg-slate-900 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
-        >
-          {loading ? 'Creating account...' : 'Sign up'}
-        </button>
-      </form>
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? 'Creating account…' : 'Sign up'}
+          </Button>
+        </form>
+      </Card>
 
-      <p className="mt-4 text-sm text-slate-600">
+      <p className="mt-4 text-sm text-steel">
         Already have an account?{' '}
-        <Link to="/login" className="font-medium text-slate-900 underline">
+        <Link to="/login" className="font-semibold text-signal underline">
           Log in
         </Link>
       </p>

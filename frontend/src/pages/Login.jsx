@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { Field, Input } from '../components/ui/Field';
+import Button from '../components/ui/Button';
+import Card from '../components/ui/Card';
 
 export default function Login() {
   const { login, loading } = useAuth();
@@ -23,47 +26,36 @@ export default function Login() {
 
   return (
     <div className="mx-auto mt-16 max-w-sm px-4">
-      <h1 className="text-2xl font-bold text-slate-900">Log in</h1>
+      <p className="font-mono text-xs font-semibold uppercase tracking-widest text-steel">Welcome back</p>
+      <h1 className="font-display text-4xl tracking-wide text-ink">Log in</h1>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Email</label>
-          <input
-            type="email"
-            name="email"
-            required
-            value={form.email}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+      <Card className="mt-6 p-5">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <Field label="Email">
+            <Input type="email" name="email" required value={form.email} onChange={handleChange} />
+          </Field>
 
-        <div>
-          <label className="block text-sm font-medium text-slate-700">Password</label>
-          <input
-            type="password"
-            name="password"
-            required
-            value={form.password}
-            onChange={handleChange}
-            className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-slate-500 focus:outline-none"
-          />
-        </div>
+          <Field label="Password">
+            <Input
+              type="password"
+              name="password"
+              required
+              value={form.password}
+              onChange={handleChange}
+            />
+          </Field>
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+          {error && <p className="text-sm text-alert">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full rounded-md bg-slate-900 py-2 text-sm font-medium text-white hover:bg-slate-700 disabled:opacity-50"
-        >
-          {loading ? 'Logging in...' : 'Log in'}
-        </button>
-      </form>
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? 'Logging in…' : 'Log in'}
+          </Button>
+        </form>
+      </Card>
 
-      <p className="mt-4 text-sm text-slate-600">
+      <p className="mt-4 text-sm text-steel">
         No account?{' '}
-        <Link to="/register" className="font-medium text-slate-900 underline">
+        <Link to="/register" className="font-semibold text-signal underline">
           Sign up
         </Link>
       </p>
