@@ -7,6 +7,12 @@ const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
+// In production the backend sits behind exactly one proxy (Caddy, see
+// frontend/Caddyfile), which sets X-Forwarded-For to the real client IP.
+// Trusting that one hop makes req.ip the visitor's IP, so the login rate
+// limiter counts each visitor separately instead of everyone as Caddy.
+app.set('trust proxy', 1);
+
 app.use(helmet());
 // In production, CORS_ORIGIN should be set to the deployed frontend's
 // public URL (see backend/.env.example). Falls back to wide-open for local
