@@ -1,4 +1,5 @@
-require('dotenv').config();
+// quiet: dotenv 17 otherwise prints an "injected env" banner on every start.
+require('dotenv').config({ quiet: true });
 
 const app = require('./app');
 const connectDB = require('./config/db');
