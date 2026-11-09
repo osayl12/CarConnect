@@ -23,8 +23,19 @@ export default function Navbar() {
   return (
     <header className="bg-ink">
       <nav className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <Link to="/" className="font-display text-2xl tracking-wider text-white" onClick={closeMenu}>
-          CAR CONNECT
+        <Link
+          to="/"
+          className="flex items-center gap-2 font-display text-2xl tracking-wider text-white"
+          onClick={closeMenu}
+        >
+          <svg viewBox="0 0 32 32" className="h-8 w-8" aria-hidden="true">
+            <path d="M5 16 10.5 6.5h11L27 16l-5.5 9.5h-11Z" fill="none" stroke="#e8531d" strokeWidth="2" strokeLinejoin="round" />
+            <path d="M19.5 12.5A5 5 0 1 0 19.5 19.5" fill="none" stroke="#e8531d" strokeWidth="3" strokeLinecap="round" />
+            <circle cx="22" cy="16" r="1.8" fill="#f4b400" />
+          </svg>
+          <span>
+            CAR <span className="text-signal">CONNECT</span>
+          </span>
         </Link>
 
         {/* Desktop nav */}
