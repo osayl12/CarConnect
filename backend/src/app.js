@@ -14,6 +14,13 @@ app.use(helmet());
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+// Express 5 leaves req.body undefined (Express 4 used {}) when no parser ran,
+// e.g. an empty or non-JSON body. Controllers destructure req.body, so keep
+// it an object to get their normal 400 errors instead of a 500 crash.
+app.use((req, res, next) => {
+  if (req.body === undefined) req.body = {};
+  next();
+});
 
 // Serve uploaded fault-report images (see Fault Reporting milestone).
 app.use('/uploads', express.static('uploads'));
