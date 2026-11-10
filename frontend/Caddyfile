@@ -16,3 +16,11 @@ carconnect.duckdns.org {
 		file_server
 	}
 }
+
+# Vero Italiano (separate project, ~/VeroItaliano on the same server) shares this Caddy.
+# Its nginx container "vero-client" serves the site and proxies /api and /uploads itself.
+# Keep this block here: the Caddyfile is baked into this image, so a block added only on
+# the server is lost on every CarConnect deploy.
+veroitaliano.duckdns.org {
+	reverse_proxy vero-client:80
+}
